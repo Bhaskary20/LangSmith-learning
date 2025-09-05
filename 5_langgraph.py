@@ -1,5 +1,3 @@
-# pip install -U langgraph langchain-openai pydantic python-dotenv langsmith
-
 import operator
 from typing import TypedDict, Annotated, List
 
@@ -10,18 +8,18 @@ from langsmith import traceable
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 
-# ---------- Setup ----------
+
 load_dotenv()
 model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-# ---------- Structured schema & model ----------
+
 class EvaluationSchema(BaseModel):
     feedback: str = Field(description="Detailed feedback for the essay")
     score: int = Field(description="Score out of 10", ge=0, le=10)
 
 structured_model = model.with_structured_output(EvaluationSchema)
 
-# ---------- Sample essay ----------
+
 essay2 = """India and AI Time
 
 Now world change very fast because new tech call Artificial Intel… something (AI). India also want become big in this AI thing. If work hard, India can go top. But if no careful, India go back.
@@ -41,14 +39,14 @@ If India use AI good way, we become strong, help poor and make better life. But 
 So, in short, AI time in India have many hope and many danger. We must go right road. AI must help all people, not only some. Then India grow big and world say "good job India".
 """
 
-# ---------- LangGraph state ----------
+
 class UPSCState(TypedDict, total=False):
     essay: str
     language_feedback: str
     analysis_feedback: str
     clarity_feedback: str
     overall_feedback: str
-    individual_scores: Annotated[List[int], operator.add]  # merges parallel lists
+    individual_scores: Annotated[List[int], operator.add]  
     avg_score: float
 
 # ---------- Traced node functions ----------
