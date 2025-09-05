@@ -1,5 +1,3 @@
-# pip install -U langchain langchain-openai langchain-community faiss-cpu pypdf python-dotenv langsmith
-
 import os
 import json
 import hashlib
@@ -18,14 +16,14 @@ from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv()
 
-PDF_PATH = "islr.pdf"  # change to your file
+PDF_PATH = "islr.pdf"  
 INDEX_ROOT = Path(".indices")
 INDEX_ROOT.mkdir(exist_ok=True)
 
-# ----------------- helpers (traced) -----------------
+
 @traceable(name="load_pdf")
 def load_pdf(path: str):
-    return PyPDFLoader(path).load()  # list[Document]
+    return PyPDFLoader(path).load()  
 
 @traceable(name="split_documents")
 def split_documents(docs, chunk_size=1000, chunk_overlap=150):
@@ -70,7 +68,7 @@ def load_index_run(index_dir: Path, embed_model_name: str):
 
 @traceable(name="build_index", tags=["index"])
 def build_index_run(pdf_path: str, index_dir: Path, chunk_size: int, chunk_overlap: int, embed_model_name: str):
-    docs = load_pdf(pdf_path)  # child
+    docs = load_pdf(pdf_path)  
     splits = split_documents(docs, chunk_size=chunk_size, chunk_overlap=chunk_overlap)  # child
     vs = build_vectorstore(splits, embed_model_name)  # child
     index_dir.mkdir(parents=True, exist_ok=True)
