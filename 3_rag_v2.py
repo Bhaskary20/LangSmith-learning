@@ -1,5 +1,3 @@
-# pip install -U langchain langchain-openai langchain-community faiss-cpu pypdf python-dotenv langsmith
-
 import os
 from dotenv import load_dotenv
 
@@ -35,7 +33,7 @@ def split_documents(docs, chunk_size=1000, chunk_overlap=150):
 @traceable(name="build_vectorstore")
 def build_vectorstore(splits):
     emb = OpenAIEmbeddings(model="text-embedding-3-small")
-    # FAISS.from_documents internally calls the embedding model:
+    
     vs = FAISS.from_documents(splits, emb)
     return vs
 
@@ -47,7 +45,7 @@ def setup_pipeline(pdf_path: str):
     vs = build_vectorstore(splits)
     return vs
 
-# ---------- pipeline ----------
+
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 prompt = ChatPromptTemplate.from_messages([
@@ -58,7 +56,7 @@ prompt = ChatPromptTemplate.from_messages([
 def format_docs(docs):
     return "\n\n".join(d.page_content for d in docs)
 
-# Build the index under traced setup
+
 vectorstore = setup_pipeline(PDF_PATH)
 retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 4})
 
@@ -69,11 +67,10 @@ parallel = RunnableParallel({
 
 chain = parallel | prompt | llm | StrOutputParser()
 
-# ---------- run a query (also traced) ----------
+
 print("PDF RAG ready. Ask a question (or Ctrl+C to exit).")
 q = input("\nQ: ").strip()
 
-# Give the visible run name + tags/metadata so it’s easy to find:
 config = {
     "run_name": "pdf_rag_query"
 }
